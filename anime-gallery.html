@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AniGreen Gallery</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --g0: #0a1a0e;
+    --g1: #0d2b14;
+    --g2: #134d21;
+    --g3: #1a6b2d;
+    --g4: #22883a;
+    --g5: #2eaa4a;
+    --g6: #3dcc5e;
+    --g7: #6de88a;
+    --g8: #a8f5bc;
+    --g9: #d4fde1;
+    --accent: #00ff6a;
+    --accent2: #7fff00;
+    --glow: rgba(0, 255, 106, 0.4);
+    --card-bg: rgba(13, 43, 20, 0.85);
+    --glass: rgba(34, 136, 58, 0.12);
+    --border: rgba(61, 204, 94, 0.25);
+    --text-main: #d4fde1;
+    --text-sub: #6de88a;
+    --shadow-card: 0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px var(--border);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Noto Sans Thai', 'Rajdhani', sans-serif;
+    background: var(--g0);
+    color: var(--text-main);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Background ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(34,136,58,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 80%, rgba(0,255,106,0.08) 0%, transparent 55%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(61,204,94,0.04) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(61,204,94,0.04) 40px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: linear-gradient(135deg, var(--g1) 0%, #0d3318 50%, var(--g2) 100%);
+    border-bottom: 2px solid var(--g5);
+    box-shadow: 0 4px 32px rgba(0,0,0,0.6), 0 1px 0 rgba(0,255,106,0.3);
+    backdrop-filter: blur(16px);
+  }
+
+  .header-inner {
+    max-width: 1400px; margin: 0 auto;
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 0 20px; height: 64px;
+  }
+
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    text-decoration: none;
+  }
+
+  .logo-icon {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--g5), var(--accent));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 0 16px var(--glow);
+    position: relative;
+    overflow: hidden;
+  }
+  .logo-icon::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15));
+  }
+
+  .logo-text {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: 1.3rem;
+    background: linear-gradient(90deg, var(--accent), var(--g7));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+  }
+  .logo-sub {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.65rem;
+    color: var(--g7);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    display: block;
+    margin-top: -4px;
+  }
+
+  .header-right { display: flex; align-items: center; gap: 12px; }
+
+  .header-badge {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    color: var(--g7);
+    background: rgba(61,204,94,0.1);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  .hamburger {
+    width: 40px; height: 40px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 5px;
+    transition: all .3s;
+  }
+  .hamburger:hover { background: rgba(61,204,94,0.2); border-color: var(--g5); box-shadow: 0 0 12px var(--glow); }
+  .hamburger span {
+    display: block; width: 18px; height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: all .3s;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* ── MOBILE MENU ── */
+  .mobile-menu {
+    position: fixed; top: 64px; right: 0;
+    width: 260px; height: calc(100vh - 64px);
+    background: linear-gradient(160deg, var(--g1), var(--g0));
+    border-left: 1px solid var(--border);
+    padding: 24px;
+    transform: translateX(100%);
+    transition: transform .35s cubic-bezier(.4,0,.2,1);
+    z-index: 99;
+    box-shadow: -8px 0 32px rgba(0,0,0,0.5);
+  }
+  .mobile-menu.open { transform: translateX(0); }
+  .mobile-menu a {
+    display: block; padding: 14px 16px;
+    color: var(--g8); text-decoration: none;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.05rem; font-weight: 600;
+    letter-spacing: 1px;
+    border-bottom: 1px solid rgba(61,204,94,0.1);
+    transition: all .2s;
+  }
+  .mobile-menu a:hover { color: var(--accent); padding-left: 24px; }
+
+  /* ── MAIN ── */
+  main {
+    max-width: 1400px; margin: 0 auto;
+    padding: 28px 20px 60px;
+    position: relative; z-index: 1;
+  }
+
+  /* ── SEARCH BAR ── */
+  .search-section {
+    margin-bottom: 28px;
+  }
+  .search-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 3px;
+    color: var(--g6);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+  .search-wrap {
+    position: relative; display: flex; gap: 10px;
+  }
+  .search-input {
+    flex: 1;
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 13px 20px 13px 48px;
+    color: var(--text-main);
+    font-family: 'Noto Sans Thai', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all .3s;
+    backdrop-filter: blur(8px);
+  }
+  .search-input::placeholder { color: rgba(109,232,138,0.4); }
+  .search-input:focus {
+    border-color: var(--g5);
+    box-shadow: 0 0 0 3px rgba(0,255,106,0.12), 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .search-icon {
+    position: absolute; left: 16px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--g6); font-size: 1.1rem;
+    pointer-events: none;
+  }
+  .search-clear {
+    position: absolute; right: 16px; top: 50%;
+    transform: translateY(-50%);
+    background: none; border: none;
+    color: var(--g6); cursor: pointer;
+    font-size: 1rem;
+    opacity: 0; transition: opacity .2s;
+  }
+  .search-input:not(:placeholder-shown) ~ .search-clear { opacity: 1; }
+
+  /* ── UPLOAD SECTION ── */
+  .upload-section {
+    background: var(--card-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 32px;
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+  }
+  .upload-section::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--g5), var(--accent), var(--g5), transparent);
+  }
+
+  .upload-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem; letter-spacing: 3px;
+    color: var(--g6); text-transform: uppercase;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .upload-title::before {
+    content: ''; display: block;
+    width: 20px; height: 2px;
+    background: var(--accent);
+  }
+
+  .upload-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 12px;
+    align-items: end;
+  }
+  @media(max-width: 640px) {
+    .upload-form-row { grid-template-columns: 1fr; }
+  }
+
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label {
+    font-size: 0.75rem; color: var(--g7);
+    font-family: 'Rajdhani'; letter-spacing: 1px;
+  }
+
+  .upload-drop {
+    background: rgba(13,43,20,0.6);
+    border: 2px dashed rgba(61,204,94,0.3);
+    border-radius: 12px;
+    padding: 22px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .3s;
+    position: relative;
+  }
+  .upload-drop:hover, .upload-drop.drag-over {
+    border-color: var(--g5);
+    background: rgba(61,204,94,0.06);
+    box-shadow: inset 0 0 24px rgba(0,255,106,0.06);
+  }
+  .upload-drop input[type=file] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer;
+  }
+  .upload-drop-icon { font-size: 1.8rem; color: var(--g5); }
+  .upload-drop-text { font-size: 0.8rem; color: var(--g7); margin-top: 4px; }
+  .upload-preview {
+    max-width: 70px; max-height: 50px;
+    border-radius: 8px; object-fit: cover;
+    border: 1px solid var(--border);
+    margin-top: 6px;
+    display: none;
+  }
+
+  .name-input {
+    background: rgba(13,43,20,0.6);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: var(--text-main);
+    font-family: 'Noto Sans Thai', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    width: 100%;
+    transition: all .3s;
+  }
+  .name-input::placeholder { color: rgba(109,232,138,0.35); }
+  .name-input:focus {
+    border-color: var(--g5);
+    box-shadow: 0 0 0 3px rgba(0,255,106,0.1);
+  }
+
+  .upload-btn {
+    background: linear-gradient(135deg, var(--g4), var(--g5));
+    color: var(--g0);
+    border: none;
+    border-radius: 12px;
+    padding: 13px 24px;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: all .3s;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+  }
+  .upload-btn::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.2) 100%);
+  }
+  .upload-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,255,106,0.35);
+  }
+  .upload-btn:active { transform: translateY(0); }
+
+  /* ── GALLERY HEADER ── */
+  .gallery-header {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .gallery-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem; letter-spacing: 3px;
+    color: var(--g6); text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .gallery-title::before {
+    content: ''; display: block;
+    width: 20px; height: 2px; background: var(--accent);
+  }
+  .gallery-count {
+    font-family: 'Rajdhani'; font-size: 0.85rem;
+    color: var(--g7);
+    background: rgba(61,204,94,0.1);
+    border: 1px solid var(--border);
+    padding: 4px 12px; border-radius: 20px;
+  }
+
+  /* ── FILTER TAGS ── */
+  .filter-row {
+    display: flex; gap: 8px; flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .filter-tag {
+    font-family: 'Rajdhani'; font-size: 0.8rem;
+    letter-spacing: 1px;
+    padding: 6px 14px; border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--g7);
+    cursor: pointer; transition: all .2s;
+  }
+  .filter-tag:hover, .filter-tag.active {
+    background: rgba(61,204,94,0.15);
+    border-color: var(--g5);
+    color: var(--accent);
+    box-shadow: 0 0 8px rgba(0,255,106,0.2);
+  }
+
+  /* ── GRID ── */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+    transition: all .35s cubic-bezier(.4,0,.2,1);
+    cursor: pointer;
+    position: relative;
+    backdrop-filter: blur(8px);
+    animation: cardIn .5s cubic-bezier(.4,0,.2,1) backwards;
+  }
+  .card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: var(--g5);
+    box-shadow: 0 20px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(61,204,94,0.4), 0 0 32px rgba(0,255,106,0.15);
+  }
+  .card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--g5), transparent);
+    opacity: 0; transition: opacity .3s;
+  }
+  .card:hover::before { opacity: 1; }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(20px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .card-img-wrap {
+    position: relative; overflow: hidden;
+    aspect-ratio: 3/4;
+    background: var(--g1);
+  }
+  .card-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .5s cubic-bezier(.4,0,.2,1);
+    display: block;
+  }
+  .card:hover .card-img { transform: scale(1.08); }
+
+  .card-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(10,26,14,0.9) 0%, transparent 50%);
+    opacity: 0; transition: opacity .3s;
+    display: flex; align-items: flex-end;
+    padding: 12px;
+  }
+  .card:hover .card-overlay { opacity: 1; }
+
+  .card-actions {
+    display: flex; gap: 8px;
+  }
+  .card-action-btn {
+    width: 32px; height: 32px;
+    background: rgba(61,204,94,0.2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all .2s;
+    font-size: 0.85rem;
+    backdrop-filter: blur(4px);
+  }
+  .card-action-btn:hover { background: rgba(61,204,94,0.35); transform: scale(1.1); }
+
+  .card-badge {
+    position: absolute; top: 10px; right: 10px;
+    font-family: 'Orbitron'; font-size: 0.55rem;
+    letter-spacing: 1px;
+    background: rgba(10,26,14,0.8);
+    border: 1px solid var(--border);
+    color: var(--g7);
+    padding: 3px 8px;
+    border-radius: 6px;
+    backdrop-filter: blur(4px);
+    text-transform: uppercase;
+  }
+
+  .card-body {
+    padding: 14px 16px;
+  }
+  .card-name {
+    font-family: 'Rajdhani'; font-size: 0.95rem; font-weight: 600;
+    color: var(--g8); letter-spacing: 0.5px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: 6px;
+  }
+  .card-meta {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .card-date {
+    font-size: 0.7rem; color: var(--g6);
+    font-family: 'Rajdhani'; letter-spacing: 0.5px;
+  }
+  .card-heart {
+    background: none; border: none;
+    color: var(--g6); cursor: pointer;
+    font-size: 0.9rem; transition: all .2s;
+    display: flex; align-items: center; gap: 4px;
+  }
+  .card-heart:hover, .card-heart.liked { color: #ff6b8a; }
+  .card-heart.liked { animation: heartPop .3s ease; }
+  @keyframes heartPop {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+  }
+  .card-delete {
+    background: none; border: none;
+    color: rgba(255,100,100,0.4); cursor: pointer;
+    font-size: 0.8rem; transition: color .2s;
+    margin-left: 6px;
+  }
+  .card-delete:hover { color: rgba(255,100,100,0.9); }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center; padding: 80px 20px;
+  }
+  .empty-icon { font-size: 4rem; opacity: 0.3; margin-bottom: 16px; }
+  .empty-text {
+    font-family: 'Rajdhani'; font-size: 1.1rem;
+    color: var(--g6); letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  /* ── LIGHTBOX ── */
+  .lightbox {
+    position: fixed; inset: 0;
+    background: rgba(5,15,8,0.95);
+    z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .3s;
+    backdrop-filter: blur(12px);
+  }
+  .lightbox.show { opacity: 1; pointer-events: all; }
+  .lightbox-inner {
+    max-width: 90vw; max-height: 90vh;
+    position: relative;
+    transform: scale(.9);
+    transition: transform .3s cubic-bezier(.4,0,.2,1);
+  }
+  .lightbox.show .lightbox-inner { transform: scale(1); }
+  .lightbox-img {
+    max-width: 100%; max-height: 80vh;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: 0 0 60px rgba(0,255,106,0.2);
+    display: block;
+  }
+  .lightbox-close {
+    position: absolute; top: -14px; right: -14px;
+    width: 36px; height: 36px;
+    background: var(--g2);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--accent); font-size: 1.1rem;
+    cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    transition: all .2s;
+  }
+  .lightbox-close:hover { background: var(--g3); box-shadow: 0 0 12px var(--glow); }
+  .lightbox-caption {
+    text-align: center; margin-top: 14px;
+    font-family: 'Rajdhani'; font-size: 1rem;
+    color: var(--g7); letter-spacing: 2px;
+  }
+
+  /* ── TOAST ── */
+  .toast-wrap {
+    position: fixed; bottom: 24px; right: 24px;
+    z-index: 300; display: flex; flex-direction: column; gap: 8px;
+  }
+  .toast {
+    background: var(--g2);
+    border: 1px solid var(--g5);
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-family: 'Rajdhani'; font-size: 0.9rem;
+    color: var(--g8); letter-spacing: 1px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 16px rgba(0,255,106,0.2);
+    animation: toastIn .3s ease, toastOut .3s ease 2.2s forwards;
+  }
+  @keyframes toastIn { from { transform: translateX(120%); opacity: 0; } }
+  @keyframes toastOut { to { transform: translateX(120%); opacity: 0; } }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--g0); }
+  ::-webkit-scrollbar-thumb { background: var(--g3); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--g5); }
+
+  /* ── RESPONSIVE ── */
+  @media(max-width: 768px) {
+    .header-badge { display: none; }
+    .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px; }
+    .card-img-wrap { aspect-ratio: 2/3; }
+  }
+  @media(max-width: 480px) {
+    .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    main { padding: 18px 14px 48px; }
+    .header-inner { padding: 0 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a href="#" class="logo">
+      <div class="logo-icon">🌿</div>
+      <div>
+        <span class="logo-text">ANIGREEN</span>
+        <span class="logo-sub">Image Gallery</span>
+      </div>
+    </a>
+    <div class="header-right">
+      <span class="header-badge" id="headerCount">0 IMAGES</span>
+      <button class="hamburger" id="hamBtn" onclick="toggleMenu()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- MOBILE MENU -->
+<nav class="mobile-menu" id="mobileMenu">
+  <a href="#gallery">🖼 Gallery</a>
+  <a href="#" onclick="scrollTop()">⬆ Top</a>
+  <a href="#" onclick="clearAll()">🗑 Clear All</a>
+  <a href="#" onclick="loadSamples()">✨ Load Samples</a>
+</nav>
+
+<!-- MAIN -->
+<main>
+
+  <!-- SEARCH -->
+  <div class="search-section">
+    <span class="search-label">🔍 ค้นหารูปภาพ</span>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" id="searchInput"
+        placeholder="ค้นหาจากชื่อรูปภาพ..." oninput="filterCards()">
+      <button class="search-clear" id="clearSearch" onclick="clearSearch()">✕</button>
+    </div>
+  </div>
+
+  <!-- UPLOAD -->
+  <div class="upload-section">
+    <div class="upload-title">➕ เพิ่มรูปภาพใหม่</div>
+    <div class="upload-form-row">
+      <div class="form-group">
+        <label>เลือกรูปภาพ</label>
+        <div class="upload-drop" id="dropZone"
+          ondragover="dragOver(event)" ondragleave="dragLeave(event)" ondrop="dropFile(event)">
+          <input type="file" id="fileInput" accept="image/*" onchange="fileChosen(event)" multiple>
+          <div class="upload-drop-icon" id="dropIcon">📂</div>
+          <div class="upload-drop-text" id="dropText">คลิกหรือลากไฟล์มาวาง</div>
+          <img class="upload-preview" id="uploadPreview">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>ชื่อรูปภาพ</label>
+        <input type="text" class="name-input" id="nameInput"
+          placeholder="ใส่ชื่อรูปภาพ..." maxlength="60">
+      </div>
+      <div class="form-group">
+        <label>&nbsp;</label>
+        <button class="upload-btn" onclick="addImage()">UPLOAD ↑</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GALLERY -->
+  <div id="gallery">
+    <div class="gallery-header">
+      <span class="gallery-title">GALLERY</span>
+      <span class="gallery-count" id="galleryCount">0 รูป</span>
+    </div>
+    <div class="filter-row" id="filterRow">
+      <button class="filter-tag active" onclick="setFilter('all',this)">ทั้งหมด</button>
+      <button class="filter-tag" onclick="setFilter('today',this)">วันนี้</button>
+      <button class="filter-tag" onclick="setFilter('fav',this)">ที่ชอบ ❤</button>
+    </div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+
+</main>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <div class="lightbox-inner">
+    <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    <img class="lightbox-img" id="lightboxImg">
+    <div class="lightbox-caption" id="lightboxCaption"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+// ── STATE ──
+let images = JSON.parse(localStorage.getItem('anigreen_imgs') || '[]');
+let pendingFiles = [];
+let currentFilter = 'all';
+let searchQuery = '';
+
+// ── INIT ──
+function init() {
+  if (images.length === 0) loadSamples(true);
+  render();
+}
+
+function save() {
+  try { localStorage.setItem('anigreen_imgs', JSON.stringify(images)); } catch(e) {}
+}
+
+// ── SAMPLE DATA ──
+const sampleColors = [
+  '#1a6b2d','#22883a','#0d3318','#134d21','#1a6b2d',
+  '#0a2b10','#2eaa4a','#0d4a1a','#19712e','#0f3d17'
+];
+const sampleNames = [
+  'Misty Forest Spirit','Emerald Shrine','Green Witch','Bamboo Guardian',
+  'Leaf Fairy','Mossy Cave Dweller','Jade Samurai','Forest Priestess',
+  'Nature Mage','River Nymph','Valley Keeper','Fern Spirit'
+];
+
+function loadSamples(silent = false) {
+  const today = new Date().toISOString();
+  images = sampleNames.map((name, i) => ({
+    id: Date.now() - i * 1000,
+    name,
+    src: generatePlaceholder(name, sampleColors[i % sampleColors.length]),
+    date: today,
+    liked: false,
+    isPlaceholder: true
+  }));
+  save(); render();
+  if (!silent) toast('✨ โหลดตัวอย่างแล้ว!');
+}
+
+function generatePlaceholder(name, bg) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 300; canvas.height = 400;
+  const ctx = canvas.getContext('2d');
+
+  // Background gradient
+  const grad = ctx.createLinearGradient(0,0,300,400);
+  grad.addColorStop(0, bg);
+  grad.addColorStop(1, '#0a1a0e');
+  ctx.fillStyle = grad; ctx.fillRect(0,0,300,400);
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(61,204,94,0.08)'; ctx.lineWidth = 1;
+  for (let x = 0; x < 300; x += 30) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,400); ctx.stroke(); }
+  for (let y = 0; y < 400; y += 30) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(300,y); ctx.stroke(); }
+
+  // Circle glow
+  const radGrad = ctx.createRadialGradient(150,180,10,150,180,120);
+  radGrad.addColorStop(0, 'rgba(0,255,106,0.25)');
+  radGrad.addColorStop(1, 'transparent');
+  ctx.fillStyle = radGrad; ctx.fillRect(0,0,300,400);
+
+  // Anime character silhouette (simple)
+  ctx.fillStyle = 'rgba(0,255,106,0.15)';
+  ctx.beginPath(); ctx.arc(150,130,55,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle = 'rgba(0,255,106,0.08)';
+  ctx.beginPath(); ctx.ellipse(150,300,60,80,0,0,Math.PI*2); ctx.fill();
+
+  // Text
+  ctx.fillStyle = 'rgba(168,245,188,0.9)';
+  ctx.font = 'bold 14px sans-serif';
+  ctx.textAlign = 'center';
+  const words = name.split(' ');
+  words.forEach((w, i) => {
+    ctx.fillText(w, 150, 360 + i * 18 - (words.length-1)*9);
+  });
+
+  // Decorative dots
+  ctx.fillStyle = 'rgba(0,255,106,0.5)';
+  [[20,20],[280,20],[20,380],[280,380]].forEach(([x,y]) => {
+    ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill();
+  });
+
+  return canvas.toDataURL('image/jpeg', 0.8);
+}
+
+// ── FILE HANDLING ──
+function fileChosen(e) {
+  pendingFiles = Array.from(e.target.files);
+  if (pendingFiles.length > 0) {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const prev = document.getElementById('uploadPreview');
+      prev.src = ev.target.result; prev.style.display = 'block';
+      document.getElementById('dropIcon').textContent = '✅';
+      document.getElementById('dropText').textContent = `${pendingFiles.length} ไฟล์เลือกแล้ว`;
+    };
+    reader.readAsDataURL(pendingFiles[0]);
+    if (!document.getElementById('nameInput').value && pendingFiles.length === 1) {
+      document.getElementById('nameInput').value =
+        pendingFiles[0].name.replace(/\.[^.]+$/, '').replace(/[-_]/g,' ');
+    }
+  }
+}
+
+function dragOver(e) { e.preventDefault(); document.getElementById('dropZone').classList.add('drag-over'); }
+function dragLeave() { document.getElementById('dropZone').classList.remove('drag-over'); }
+function dropFile(e) {
+  e.preventDefault(); dragLeave();
+  pendingFiles = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+  if (pendingFiles.length) fileChosen({ target: { files: pendingFiles } });
+}
+
+function addImage() {
+  const name = document.getElementById('nameInput').value.trim() || '(ไม่มีชื่อ)';
+  if (pendingFiles.length === 0) { toast('⚠ กรุณาเลือกรูปภาพก่อน'); return; }
+  let processed = 0;
+  pendingFiles.forEach((file, idx) => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      images.unshift({
+        id: Date.now() + idx,
+        name: pendingFiles.length > 1 ? `${name} ${idx+1}` : name,
+        src: ev.target.result,
+        date: new Date().toISOString(),
+        liked: false
+      });
+      processed++;
+      if (processed === pendingFiles.length) {
+        save(); render();
+        resetForm();
+        toast(`✅ เพิ่ม ${processed} รูปสำเร็จ!`);
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function resetForm() {
+  document.getElementById('nameInput').value = '';
+  document.getElementById('fileInput').value = '';
+  document.getElementById('uploadPreview').style.display = 'none';
+  document.getElementById('dropIcon').textContent = '📂';
+  document.getElementById('dropText').textContent = 'คลิกหรือลากไฟล์มาวาง';
+  pendingFiles = [];
+}
+
+// ── FILTER / SEARCH ──
+function filterCards() {
+  searchQuery = document.getElementById('searchInput').value.toLowerCase();
+  render();
+}
+function clearSearch() {
+  document.getElementById('searchInput').value = '';
+  searchQuery = '';
+  render();
+}
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-tag').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function getFiltered() {
+  let list = [...images];
+  if (currentFilter === 'today') {
+    const today = new Date().toDateString();
+    list = list.filter(img => new Date(img.date).toDateString() === today);
+  } else if (currentFilter === 'fav') {
+    list = list.filter(img => img.liked);
+  }
+  if (searchQuery) {
+    list = list.filter(img => img.name.toLowerCase().includes(searchQuery));
+  }
+  return list;
+}
+
+// ── RENDER ──
+function render() {
+  const grid = document.getElementById('galleryGrid');
+  const list = getFiltered();
+  const total = images.length;
+
+  document.getElementById('headerCount').textContent = `${total} IMAGES`;
+  document.getElementById('galleryCount').textContent = `${list.length} รูป`;
+
+  if (list.length === 0) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">🌿</div>
+        <div class="empty-text">ไม่พบรูปภาพ</div>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map((img, i) => `
+    <div class="card" style="animation-delay:${Math.min(i,8)*0.04}s" onclick="openLightbox('${img.id}')">
+      <div class="card-img-wrap">
+        <img class="card-img" src="${img.src}" alt="${escHtml(img.name)}" loading="lazy">
+        <div class="card-badge">PNG</div>
+        <div class="card-overlay">
+          <div class="card-actions">
+            <button class="card-action-btn" title="Fullscreen" onclick="event.stopPropagation();openLightbox('${img.id}')">🔍</button>
+            <button class="card-action-btn" title="Download" onclick="event.stopPropagation();downloadImg('${img.id}')">⬇</button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="card-name" title="${escHtml(img.name)}">${escHtml(img.name)}</div>
+        <div class="card-meta">
+          <span class="card-date">${fmtDate(img.date)}</span>
+          <div style="display:flex;align-items:center">
+            <button class="card-heart ${img.liked?'liked':''}"
+              onclick="event.stopPropagation();toggleLike('${img.id}',this)">
+              ${img.liked?'❤':'🤍'}
+            </button>
+            <button class="card-delete" title="ลบ"
+              onclick="event.stopPropagation();deleteImg('${img.id}')">🗑</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtDate(iso) {
+  const d = new Date(iso);
+  return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear().toString().slice(-2)}`;
+}
+
+// ── ACTIONS ──
+function toggleLike(id, btn) {
+  const img = images.find(i => i.id == id);
+  if (!img) return;
+  img.liked = !img.liked;
+  btn.className = 'card-heart ' + (img.liked ? 'liked' : '');
+  btn.textContent = img.liked ? '❤' : '🤍';
+  save();
+  if (currentFilter === 'fav') render();
+}
+
+function deleteImg(id) {
+  images = images.filter(i => i.id != id);
+  save(); render();
+  toast('🗑 ลบรูปแล้ว');
+}
+
+function downloadImg(id) {
+  const img = images.find(i => i.id == id);
+  if (!img) return;
+  const a = document.createElement('a');
+  a.href = img.src; a.download = img.name + '.jpg';
+  a.click();
+  toast('⬇ ดาวน์โหลดแล้ว!');
+}
+
+function clearAll() {
+  if (!confirm('ลบรูปทั้งหมด?')) return;
+  images = []; save(); render();
+  toast('🗑 ล้างแกลเลอรีแล้ว');
+  toggleMenu();
+}
+
+// ── LIGHTBOX ──
+function openLightbox(id) {
+  const img = images.find(i => i.id == id);
+  if (!img) return;
+  document.getElementById('lightboxImg').src = img.src;
+  document.getElementById('lightboxCaption').textContent = img.name;
+  document.getElementById('lightbox').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox(e) {
+  if (e && e.target !== document.getElementById('lightbox') && !e.target.classList.contains('lightbox-close')) return;
+  document.getElementById('lightbox').classList.remove('show');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox({}); });
+
+// ── MENU ──
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+  document.getElementById('hamBtn').classList.toggle('open');
+}
+function scrollTop() { window.scrollTo({top:0,behavior:'smooth'}); toggleMenu(); }
+
+// ── TOAST ──
+function toast(msg) {
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 2700);
+}
+
+// ── START ──
+init();
+</script>
+</body>
+</html>
