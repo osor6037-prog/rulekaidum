@@ -4,6 +4,41 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AniGreen Gallery</title>
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, set, get, remove, onValue, update }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  // ══════════════════════════════════════════════
+  //  🔧 วาง Firebase config ของคุณที่นี่
+  // ══════════════════════════════════════════════
+  const firebaseConfig = {
+  apiKey: "AIzaSyAGuKWpmm4h7FhJXvFIHv01laBswMQECZk",
+  authDomain: "rulekaidum-e6ebc.firebaseapp.com",
+  databaseURL: "https://rulekaidum-e6ebc-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "rulekaidum-e6ebc",
+  storageBucket: "rulekaidum-e6ebc.firebasestorage.app",
+  messagingSenderId: "393827066832",
+  appId: "1:393827066832:web:68c29ce569d9fa5a27cfd5",
+  measurementId: "G-4CJL5QRN6Z"
+};
+  // ══════════════════════════════════════════════
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+
+  // ── expose ให้ global script ใช้ได้ ──
+  window._fbDB     = db;
+  window._fbRef    = ref;
+  window._fbSet    = set;
+  window._fbGet    = get;
+  window._fbRemove = remove;
+  window._fbOnValue = onValue;
+  window._fbUpdate = update;
+  window._fbReady  = true;
+  document.dispatchEvent(new Event('firebase-ready'));
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -705,20 +740,92 @@
 
 <script>
 // ── STATE ──
-let images = JSON.parse(localStorage.getItem('anigreen_imgs') || '[]');
+let images = [];
 let pendingFiles = [];
 let currentFilter = 'all';
-let searchQuery = '';
+let searchQuery   = '';
+let _dbReady      = false;
+
+// ── FIREBASE HELPERS ──
+function dbRef(path) { return window._fbRef(window._fbDB, path); }
+
+async function fbSaveImage(img) {
+  // แต่ละรูปเก็บที่ /images/<id>
+  // Base64 อาจยาวมาก — แบ่งเก็บ src แยกเพื่อให้ update metadata ได้เร็ว
+  await window._fbSet(dbRef(`images/${img.id}`), {
+    id:    img.id,
+    name:  img.name,
+    src:   img.src,          // base64 string
+    date:  img.date,
+    liked: img.liked,
+    isPlaceholder: img.isPlaceholder || false
+  });
+}
+
+async function fbDeleteImage(id) {
+  await window._fbRemove(dbRef(`images/${id}`));
+}
+
+async function fbUpdateLike(id, liked) {
+  await window._fbUpdate(dbRef(`images/${id}`), { liked });
+}
+
+async function fbClearAll() {
+  await window._fbRemove(dbRef('images'));
+}
 
 // ── INIT ──
 function init() {
-  if (images.length === 0) loadSamples(true);
-  render();
+  showLoading(true);
+  // รอ Firebase พร้อม
+  if (window._fbReady) startListening();
+  else document.addEventListener('firebase-ready', startListening);
 }
 
-function save() {
-  try { localStorage.setItem('anigreen_imgs', JSON.stringify(images)); } catch(e) {}
+function showLoading(on) {
+  let el = document.getElementById('fbLoading');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'fbLoading';
+    el.style.cssText = `
+      position:fixed;inset:0;z-index:999;
+      background:rgba(10,26,14,0.92);
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;gap:16px;
+      font-family:'Orbitron',monospace;color:var(--accent);
+      font-size:0.8rem;letter-spacing:3px;
+    `;
+    el.innerHTML = `
+      <div style="width:48px;height:48px;border:3px solid rgba(0,255,106,0.2);
+        border-top-color:var(--accent);border-radius:50%;
+        animation:spin 0.8s linear infinite"></div>
+      <span>CONNECTING TO FIREBASE...</span>
+      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+    `;
+    document.body.appendChild(el);
+  }
+  el.style.display = on ? 'flex' : 'none';
 }
+
+function startListening() {
+  _dbReady = true;
+  // Real-time listener — อัปเดต UI ทุกครั้งที่ข้อมูลเปลี่ยน
+  window._fbOnValue(dbRef('images'), snapshot => {
+    const data = snapshot.val();
+    if (data) {
+      images = Object.values(data).sort((a,b) => b.id - a.id);
+    } else {
+      images = [];
+    }
+    showLoading(false);
+    if (images.length === 0) loadSamples(true);
+    else render();
+  });
+}
+
+// save() ว่างไว้ — ใช้ fbSaveImage แทน (เพื่อไม่ให้ code เดิม error)
+function save() {}
+
 
 // ── SAMPLE DATA ──
 const sampleColors = [
@@ -733,7 +840,7 @@ const sampleNames = [
 
 function loadSamples(silent = false) {
   const today = new Date().toISOString();
-  images = sampleNames.map((name, i) => ({
+  const samples = sampleNames.map((name, i) => ({
     id: Date.now() - i * 1000,
     name,
     src: generatePlaceholder(name, sampleColors[i % sampleColors.length]),
@@ -741,8 +848,15 @@ function loadSamples(silent = false) {
     liked: false,
     isPlaceholder: true
   }));
-  save(); render();
-  if (!silent) toast('✨ โหลดตัวอย่างแล้ว!');
+
+  // บันทึกทั้งหมดลง Firebase
+  Promise.all(samples.map(img => fbSaveImage(img)))
+    .then(() => { if (!silent) toast('✨ โหลดตัวอย่างแล้ว!'); })
+    .catch(e => toast('❌ โหลดตัวอย่างไม่สำเร็จ: ' + e.message));
+
+  // แสดงผลทันที (listener จะ sync)
+  images = [...samples];
+  render();
 }
 
 function generatePlaceholder(name, bg) {
@@ -821,20 +935,31 @@ function dropFile(e) {
 function addImage() {
   const name = document.getElementById('nameInput').value.trim() || '(ไม่มีชื่อ)';
   if (pendingFiles.length === 0) { toast('⚠ กรุณาเลือกรูปภาพก่อน'); return; }
+
+  // ตรวจขนาดไฟล์ (แนะนำ ≤ 500 KB ต่อรูป เพราะเก็บใน RTDB)
+  const oversized = pendingFiles.filter(f => f.size > 500 * 1024);
+  if (oversized.length > 0) {
+    toast(`⚠ รูป ${oversized.length} ไฟล์ใหญ่เกิน 500KB — อาจช้า`);
+  }
+
   let processed = 0;
   pendingFiles.forEach((file, idx) => {
     const reader = new FileReader();
-    reader.onload = ev => {
-      images.unshift({
-        id: Date.now() + idx,
-        name: pendingFiles.length > 1 ? `${name} ${idx+1}` : name,
-        src: ev.target.result,
-        date: new Date().toISOString(),
+    reader.onload = async ev => {
+      const newImg = {
+        id:    Date.now() + idx,
+        name:  pendingFiles.length > 1 ? `${name} ${idx+1}` : name,
+        src:   ev.target.result,   // base64 string
+        date:  new Date().toISOString(),
         liked: false
-      });
+      };
+      try {
+        await fbSaveImage(newImg);   // บันทึกลง Firebase RTDB
+      } catch(e) {
+        toast('❌ บันทึกไม่สำเร็จ: ' + e.message);
+      }
       processed++;
       if (processed === pendingFiles.length) {
-        save(); render();
         resetForm();
         toast(`✅ เพิ่ม ${processed} รูปสำเร็จ!`);
       }
@@ -944,14 +1069,17 @@ function toggleLike(id, btn) {
   img.liked = !img.liked;
   btn.className = 'card-heart ' + (img.liked ? 'liked' : '');
   btn.textContent = img.liked ? '❤' : '🤍';
-  save();
+  fbUpdateLike(id, img.liked).catch(e => toast('❌ ' + e.message));
   if (currentFilter === 'fav') render();
 }
 
 function deleteImg(id) {
+  fbDeleteImage(id)
+    .then(() => toast('🗑 ลบรูปแล้ว'))
+    .catch(e => toast('❌ ' + e.message));
+  // อัปเดต local array ทันที (listener จะ sync อีกครั้งภายหลัง)
   images = images.filter(i => i.id != id);
-  save(); render();
-  toast('🗑 ลบรูปแล้ว');
+  render();
 }
 
 function downloadImg(id) {
@@ -965,8 +1093,10 @@ function downloadImg(id) {
 
 function clearAll() {
   if (!confirm('ลบรูปทั้งหมด?')) return;
-  images = []; save(); render();
-  toast('🗑 ล้างแกลเลอรีแล้ว');
+  fbClearAll()
+    .then(() => toast('🗑 ล้างแกลเลอรีแล้ว'))
+    .catch(e => toast('❌ ' + e.message));
+  images = []; render();
   toggleMenu();
 }
 
