@@ -290,12 +290,136 @@
 
   .upload-form-row {
     display: grid;
-    grid-template-columns: 1fr 1fr auto;
+    grid-template-columns: 1fr 1fr 1fr auto;
     gap: 12px;
     align-items: end;
   }
+  @media(max-width: 900px) {
+    .upload-form-row { grid-template-columns: 1fr 1fr; }
+    .upload-form-row > .form-group:last-child { grid-column: 1 / -1; }
+  }
   @media(max-width: 640px) {
     .upload-form-row { grid-template-columns: 1fr; }
+  }
+
+  /* ── PRICE INPUT ROW ── */
+  .price-input-wrap {
+    display: flex; gap: 0;
+    background: rgba(13,43,20,0.6);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all .3s;
+  }
+  .price-input-wrap:focus-within {
+    border-color: var(--g5);
+    box-shadow: 0 0 0 3px rgba(0,255,106,0.1);
+  }
+  .currency-select {
+    background: rgba(61,204,94,0.08);
+    border: none;
+    border-right: 1.5px solid var(--border);
+    color: var(--g7);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0 10px;
+    cursor: pointer;
+    outline: none;
+    min-width: 64px;
+    transition: background .2s;
+  }
+  .currency-select:hover { background: rgba(61,204,94,0.15); }
+  .currency-select option { background: var(--g1); color: var(--text-main); }
+  .price-input {
+    background: transparent;
+    border: none;
+    padding: 12px 14px;
+    color: var(--text-main);
+    font-family: 'Noto Sans Thai', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    width: 100%;
+  }
+  .price-input::placeholder { color: rgba(109,232,138,0.35); }
+
+  /* ── CONFIRM MODAL ── */
+  .confirm-overlay {
+    position: fixed; inset: 0; z-index: 500;
+    background: rgba(5,15,8,0.88);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    opacity: 0; pointer-events: none;
+    transition: opacity .25s;
+    backdrop-filter: blur(8px);
+  }
+  .confirm-overlay.show { opacity: 1; pointer-events: all; }
+  .confirm-box {
+    background: linear-gradient(160deg, var(--g1), #0a1f10);
+    border: 1.5px solid rgba(255,100,100,0.3);
+    border-radius: 20px;
+    padding: 32px 28px 24px;
+    max-width: 360px; width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,100,100,0.15);
+    transform: scale(.92);
+    transition: transform .25s cubic-bezier(.4,0,.2,1);
+    position: relative;
+    overflow: hidden;
+  }
+  .confirm-box::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255,100,100,0.6), transparent);
+  }
+  .confirm-overlay.show .confirm-box { transform: scale(1); }
+  .confirm-icon { font-size: 2.8rem; margin-bottom: 12px; }
+  .confirm-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.75rem; letter-spacing: 3px;
+    color: rgba(255,140,140,0.9);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .confirm-msg {
+    font-family: 'Noto Sans Thai', sans-serif;
+    font-size: 0.9rem; color: var(--g8);
+    line-height: 1.6; margin-bottom: 24px;
+  }
+  .confirm-name {
+    color: var(--accent); font-weight: 600;
+  }
+  .confirm-btns { display: flex; gap: 10px; justify-content: center; }
+  .confirm-cancel {
+    flex: 1;
+    background: rgba(61,204,94,0.08);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 0;
+    color: var(--g7);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 0.9rem; font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer; transition: all .2s;
+  }
+  .confirm-cancel:hover { background: rgba(61,204,94,0.15); border-color: var(--g5); color: var(--accent); }
+  .confirm-delete {
+    flex: 1;
+    background: linear-gradient(135deg, rgba(200,50,50,0.25), rgba(200,50,50,0.1));
+    border: 1.5px solid rgba(255,100,100,0.4);
+    border-radius: 10px;
+    padding: 11px 0;
+    color: rgba(255,140,140,0.9);
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem; font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer; transition: all .2s;
+  }
+  .confirm-delete:hover {
+    background: rgba(200,50,50,0.35);
+    border-color: rgba(255,100,100,0.7);
+    box-shadow: 0 0 16px rgba(255,80,80,0.3);
+    color: #ff9999;
   }
 
   .form-group { display: flex; flex-direction: column; gap: 6px; }
@@ -519,7 +643,22 @@
     font-family: 'Rajdhani'; font-size: 0.95rem; font-weight: 600;
     color: var(--g8); letter-spacing: 0.5px;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-bottom: 4px;
+  }
+  .card-price {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.72rem; font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 1px;
     margin-bottom: 6px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .card-price.no-price {
+    color: rgba(109,232,138,0.25);
+    font-size: 0.65rem;
+    font-family: 'Rajdhani';
+    letter-spacing: 1px;
+    font-weight: 400;
   }
   .card-meta {
     display: flex; align-items: center; justify-content: space-between;
@@ -679,7 +818,7 @@
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
       <input type="text" class="search-input" id="searchInput"
-        placeholder="ค้นหาจากชื่อรูปภาพ..." oninput="filterCards()">
+        placeholder="ค้นหาจากชื่อ หรือ ราคา (เช่น 150, ฿, THB)..." oninput="filterCards()">
       <button class="search-clear" id="clearSearch" onclick="clearSearch()">✕</button>
     </div>
   </div>
@@ -704,6 +843,25 @@
           placeholder="ใส่ชื่อรูปภาพ..." maxlength="60">
       </div>
       <div class="form-group">
+        <label>ราคา (ไม่บังคับ)</label>
+        <div class="price-input-wrap">
+          <select class="currency-select" id="currencySelect">
+            <option value="THB">฿ THB</option>
+            <option value="USD">$ USD</option>
+            <option value="JPY">¥ JPY</option>
+            <option value="EUR">€ EUR</option>
+            <option value="GBP">£ GBP</option>
+            <option value="CNY">¥ CNY</option>
+            <option value="KRW">₩ KRW</option>
+            <option value="SGD">S$ SGD</option>
+            <option value="MYR">RM MYR</option>
+          </select>
+          <input type="text" class="price-input" id="priceInput"
+            placeholder="0.00" inputmode="decimal"
+            oninput="validatePriceInput(this)">
+        </div>
+      </div>
+      <div class="form-group">
         <label>&nbsp;</label>
         <button class="upload-btn" onclick="addImage()">UPLOAD ↑</button>
       </div>
@@ -726,12 +884,29 @@
 
 </main>
 
+<!-- CONFIRM DELETE MODAL -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">🗑️</div>
+    <div class="confirm-title">ยืนยันการลบ</div>
+    <div class="confirm-msg">
+      คุณต้องการลบ <span class="confirm-name" id="confirmItemName">รายการนี้</span> ออกจากแกลเลอรีใช่ไหม?<br>
+      <span style="font-size:0.8rem;color:rgba(255,140,140,0.6)">การลบจะไม่สามารถกู้คืนได้</span>
+    </div>
+    <div class="confirm-btns">
+      <button class="confirm-cancel" onclick="closeConfirm()">ยกเลิก</button>
+      <button class="confirm-delete" id="confirmDeleteBtn">DELETE</button>
+    </div>
+  </div>
+</div>
+
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
   <div class="lightbox-inner">
     <button class="lightbox-close" onclick="closeLightbox()">✕</button>
     <img class="lightbox-img" id="lightboxImg">
     <div class="lightbox-caption" id="lightboxCaption"></div>
+    <div class="lightbox-caption" id="lightboxPrice" style="font-family:'Orbitron',monospace;font-size:0.8rem;color:var(--accent);margin-top:4px;letter-spacing:2px;"></div>
   </div>
 </div>
 
@@ -758,6 +933,8 @@ async function fbSaveImage(img) {
     src:   img.src,          // base64 string
     date:  img.date,
     liked: img.liked,
+    price: img.price || '',
+    currency: img.currency || 'THB',
     isPlaceholder: img.isPlaceholder || false
   });
 }
@@ -905,7 +1082,45 @@ function generatePlaceholder(name, bg) {
   return canvas.toDataURL('image/jpeg', 0.8);
 }
 
-// ── FILE HANDLING ──
+// ── PRICE VALIDATION ──
+function validatePriceInput(el) {
+  // Allow only digits and one decimal point
+  let v = el.value.replace(/[^0-9.]/g, '');
+  const parts = v.split('.');
+  if (parts.length > 2) v = parts[0] + '.' + parts.slice(1).join('');
+  if (parts[1] && parts[1].length > 2) v = parts[0] + '.' + parts[1].slice(0,2);
+  el.value = v;
+}
+
+// ── CONFIRM DELETE ──
+let _pendingDeleteId = null;
+function showConfirm(id) {
+  const img = images.find(i => i.id == id);
+  if (!img) return;
+  _pendingDeleteId = id;
+  document.getElementById('confirmItemName').textContent = `"${img.name}"`;
+  document.getElementById('confirmOverlay').classList.add('show');
+  document.getElementById('confirmDeleteBtn').onclick = () => {
+    closeConfirm();
+    fbDeleteImage(_pendingDeleteId)
+      .then(() => toast('🗑 ลบรูปแล้ว'))
+      .catch(e => toast('❌ ' + e.message));
+    images = images.filter(i => i.id != _pendingDeleteId);
+    _pendingDeleteId = null;
+    render();
+  };
+}
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('show');
+  _pendingDeleteId = null;
+}
+// Close confirm on overlay click
+document.getElementById('confirmOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeConfirm();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeConfirm(); closeLightbox({}); } });
+
+
 function fileChosen(e) {
   pendingFiles = Array.from(e.target.files);
   if (pendingFiles.length > 0) {
@@ -934,6 +1149,8 @@ function dropFile(e) {
 
 function addImage() {
   const name = document.getElementById('nameInput').value.trim() || '(ไม่มีชื่อ)';
+  const price = document.getElementById('priceInput').value.trim();
+  const currency = document.getElementById('currencySelect').value;
   if (pendingFiles.length === 0) { toast('⚠ กรุณาเลือกรูปภาพก่อน'); return; }
 
   // ตรวจขนาดไฟล์ (แนะนำ ≤ 500 KB ต่อรูป เพราะเก็บใน RTDB)
@@ -951,7 +1168,9 @@ function addImage() {
         name:  pendingFiles.length > 1 ? `${name} ${idx+1}` : name,
         src:   ev.target.result,   // base64 string
         date:  new Date().toISOString(),
-        liked: false
+        liked: false,
+        price: price,
+        currency: currency
       };
       try {
         await fbSaveImage(newImg);   // บันทึกลง Firebase RTDB
@@ -970,6 +1189,8 @@ function addImage() {
 
 function resetForm() {
   document.getElementById('nameInput').value = '';
+  document.getElementById('priceInput').value = '';
+  document.getElementById('currencySelect').value = 'THB';
   document.getElementById('fileInput').value = '';
   document.getElementById('uploadPreview').style.display = 'none';
   document.getElementById('dropIcon').textContent = '📂';
@@ -1003,13 +1224,44 @@ function getFiltered() {
     list = list.filter(img => img.liked);
   }
   if (searchQuery) {
-    list = list.filter(img => img.name.toLowerCase().includes(searchQuery));
+    const q = searchQuery.toLowerCase().trim();
+    // Build price display string for each item then match
+    list = list.filter(img => {
+      const nameMatch = img.name.toLowerCase().includes(q);
+      const priceStr = img.price ? formatPrice(img.price, img.currency || 'THB').toLowerCase() : '';
+      const priceRaw = img.price ? String(img.price) : '';
+      const currencyMatch = img.currency ? img.currency.toLowerCase().includes(q) : false;
+      const priceMatch = priceStr.includes(q) || priceRaw.includes(q) || currencyMatch;
+      return nameMatch || priceMatch;
+    });
   }
   return list;
 }
 
-// ── RENDER ──
+// ── PRICE FORMAT HELPER ──
+const CURRENCY_SYMBOLS = {
+  THB: '฿', USD: '$', JPY: '¥', EUR: '€', GBP: '£',
+  CNY: '¥', KRW: '₩', SGD: 'S$', MYR: 'RM'
+};
+function formatPrice(price, currency) {
+  if (!price && price !== 0) return '';
+  const sym = CURRENCY_SYMBOLS[currency] || currency;
+  const num = parseFloat(price);
+  if (isNaN(num)) return '';
+  // JPY and KRW usually no decimals
+  const decimals = (currency === 'JPY' || currency === 'KRW') ? 0 : 2;
+  return `${sym} ${num.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })} ${currency}`;
+}
+
+// ── RENDER (with batch DOM update for performance) ──
+let _renderDebounce = null;
 function render() {
+  // Debounce rapid consecutive renders (e.g. Firebase listener firing)
+  clearTimeout(_renderDebounce);
+  _renderDebounce = setTimeout(_doRender, 16);
+}
+
+function _doRender() {
   const grid = document.getElementById('galleryGrid');
   const list = getFiltered();
   const total = images.length;
@@ -1026,10 +1278,13 @@ function render() {
     return;
   }
 
-  grid.innerHTML = list.map((img, i) => `
+  // Build HTML in one pass with DocumentFragment equivalent (string concat)
+  const html = list.map((img, i) => {
+    const priceDisplay = img.price ? formatPrice(img.price, img.currency || 'THB') : '';
+    return `
     <div class="card" style="animation-delay:${Math.min(i,8)*0.04}s" onclick="openLightbox('${img.id}')">
       <div class="card-img-wrap">
-        <img class="card-img" src="${img.src}" alt="${escHtml(img.name)}" loading="lazy">
+        <img class="card-img" src="${img.src}" alt="${escHtml(img.name)}" loading="lazy" decoding="async">
         <div class="card-badge">PNG</div>
         <div class="card-overlay">
           <div class="card-actions">
@@ -1040,6 +1295,10 @@ function render() {
       </div>
       <div class="card-body">
         <div class="card-name" title="${escHtml(img.name)}">${escHtml(img.name)}</div>
+        ${priceDisplay
+          ? `<div class="card-price">${escHtml(priceDisplay)}</div>`
+          : `<div class="card-price no-price">ไม่ระบุราคา</div>`
+        }
         <div class="card-meta">
           <span class="card-date">${fmtDate(img.date)}</span>
           <div style="display:flex;align-items:center">
@@ -1048,12 +1307,15 @@ function render() {
               ${img.liked?'❤':'🤍'}
             </button>
             <button class="card-delete" title="ลบ"
-              onclick="event.stopPropagation();deleteImg('${img.id}')">🗑</button>
+              onclick="event.stopPropagation();showConfirm('${img.id}')">🗑</button>
           </div>
         </div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
+
+  // Single DOM write = minimal reflow/repaint
+  grid.innerHTML = html;
 }
 
 function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -1074,12 +1336,8 @@ function toggleLike(id, btn) {
 }
 
 function deleteImg(id) {
-  fbDeleteImage(id)
-    .then(() => toast('🗑 ลบรูปแล้ว'))
-    .catch(e => toast('❌ ' + e.message));
-  // อัปเดต local array ทันที (listener จะ sync อีกครั้งภายหลัง)
-  images = images.filter(i => i.id != id);
-  render();
+  // Kept for backward compat — route through confirm
+  showConfirm(id);
 }
 
 function downloadImg(id) {
@@ -1106,6 +1364,13 @@ function openLightbox(id) {
   if (!img) return;
   document.getElementById('lightboxImg').src = img.src;
   document.getElementById('lightboxCaption').textContent = img.name;
+  const priceEl = document.getElementById('lightboxPrice');
+  if (img.price) {
+    priceEl.textContent = formatPrice(img.price, img.currency || 'THB');
+    priceEl.style.display = '';
+  } else {
+    priceEl.style.display = 'none';
+  }
   document.getElementById('lightbox').classList.add('show');
   document.body.style.overflow = 'hidden';
 }
@@ -1114,7 +1379,6 @@ function closeLightbox(e) {
   document.getElementById('lightbox').classList.remove('show');
   document.body.style.overflow = '';
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox({}); });
 
 // ── MENU ──
 function toggleMenu() {
